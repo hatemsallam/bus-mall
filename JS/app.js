@@ -19,11 +19,17 @@ let rightImageIndex;
 
 let middleImageIndex;
 
+
+let productNames=[];
+let votes=[];
+let timesShown=[];
+
 function Product(name,source) {
   this.name=name;
   this.source=source;
   this.votes=0;
   this.timesShown=0;
+  productNames.push(this.name);
 
   Product.allProducts.push(this);
 }
@@ -75,13 +81,20 @@ function renderThreeImages() {
   middleImageIndex=generateRandomIndex()
   rightImageIndex=generateRandomIndex();
 
-  while (leftImageIndex===rightImageIndex || leftImageIndex===middleImageIndex || rightImageIndex===middleImageIndex) {
+
+  let threeImages=[]
+
+
+  while (leftImageIndex===rightImageIndex || leftImageIndex===middleImageIndex || rightImageIndex===middleImageIndex ||threeImages.includes(leftImageIndex) || threeImages.includes(rightImageIndex) || threeImages.includes(middleImageIndex) ) {
+   
     rightImageIndex=generateRandomIndex();
     middleImageIndex=generateRandomIndex();
     leftImageIndex=generateRandomIndex()
-
+    
   }
 
+  threeImages.push(leftImageIndex,middleImageIndex,rightImageIndex)
+console.log(threeImages)
  
 
   leftImageElement.src=Product.allProducts[leftImageIndex].source;
@@ -107,7 +120,7 @@ container.addEventListener('click',handleUserClick);
 
 function handleUserClick(event) {
   
-  console.log(event.target.id);
+ // console.log(event.target.id);
 
   
   userAttemptsCounter++;
@@ -148,7 +161,95 @@ function handleUserClick(event) {
 
   }
     container.removeEventListener('click',handleUserClick);
+
+    for (let i = 0; i < Product.allProducts.length; i++) {
+
+      votes.push(Product.allProducts[i].votes);
+      timesShown.push(Product.allProducts[i].timesShown);
+    }
     
+
+    chart();
   }
 
+}
+
+
+
+
+
+
+function showingList() {
+let list=document.getElementById('results-list');
+for (let i = 0; i < Product.allProducts.length; i++) {
+  let productResult=document.createElement('li');
+
+  list.append(productResult);
+
+  productResult.textContent=`${productResult.allProducts[i].name} has ${Product.allProducts[i].votes} votes and was seen ${Product.allProducts[i].timesShown}`;
+  
+}
+// button.removeEventListener('click',showingList);
+
+}
+
+function chart() {
+let ctx = document.getElementById('myChart');
+let myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels:productNames,
+        datasets: [{
+            label: '# of Votes',
+            data:votes,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        },
+        {
+          label: '# of Shown',
+          data:timesShown,
+          backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+      }
+      ]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+  
 }
